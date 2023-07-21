@@ -1,0 +1,47 @@
+version: "3.7"
+services:
+  roundcube:
+    image: roundcube/roundcubemail:latest-fpm
+    hostname: roundcube
+    restart: unless-stopped
+    volumes:
+      - ./roundcube/www:/var/www/html
+      - ./roundcube/config:/var/roundcube/config
+      - ./roundcube/db/sqlite:/var/roundcube/db
+    networks:
+      - services
+    expose:
+      - "9000"
+    environment:
+      - ROUNDCUBEMAIL_DB_TYPE=sqlite
+      - ROUNDCUBEMAIL_SKIN=elastic
+      - ROUNDCUBEMAIL_DEFAULT_HOST=tls://mda #IMAPS endpoint
+      - ROUNDCUBEMAIL_SMTP_SERVER=tls://mta  #SMTP endpoint
+      - ROUNDCUBEMAIL_USERNAME_DOMAIN=${DOMAIN}
+      - ROUNDCUBE_AUTOCOMPLETE_ADDRESS_BOOK_HOST=ldap://ldap
+      - ROUNDCUBE_AUTOCOMPLETE_ADDRESS_BOOK_BASE_DN=${LDAP_SEARCH_BASE}
+      - ROUNDCUBE_AUTOCOMPLETE_ADDRESS_BOOK_BIND_DN=${LDAP_LINK_USER_CN}
+      - ROUNDCUBE_AUTOCOMPLETE_ADDRESS_BOOK_BIND_PASS=${LDAP_LINK_USER_PASSWD}
+  roundcubenginx:
+    image: nginx:latest
+    hostname: roundcubenginx
+    restart: unless-stopped
+    networks:
+      - services
+    ports:
+      - "80:80"
+    depends_on:
+      - roundcube
+    links:
+      - roundcube
+    volumes:
+      - ./roundcube/www:/var/www/html
+      - ./nginx/templates:/etc/nginx/templates
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    environment:
+      - NGINX_PHP_CGI=roundcube:9000  # same as roundcubemail container name
+
+networks:
+  services:
+    name: services
+    external: true

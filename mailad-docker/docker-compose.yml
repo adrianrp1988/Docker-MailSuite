@@ -1,0 +1,120 @@
+version: "3.7"
+services:
+  mda:
+    image: mailad/mda
+    build: ./mda/
+    domainname: ${DOMAIN}
+    hostname: mda
+    restart: unless-stopped
+    environment:
+      DOVECOT_DOMAIN: "${DOMAIN}"
+      DOVECOT_DEFAULT_MAILBOX_SIZE: ${DOVECOT_DEFAULT_MAILBOX_SIZE}
+      DOVECOT_LDAP_URI: "ldap://ldap:389"
+      DOVECOT_LDAP_SEARCH_BASE: ${LDAP_SEARCH_BASE}
+      DOVECOT_LDAP_BINDUSER: ${LDAP_LINK_USER_CN}
+      DOVECOT_LDAP_BINDUSER_PASSWD: ${LDAP_LINK_USER_PASSWD}
+    networks:
+     - services
+    ports:
+      - "110:110"
+      - "143:143"
+      - "993:993"
+      - "995:995"
+      - "4190"
+      - "12345"
+    volumes:
+      - vmail:/home/vmail
+      - certs:/certs
+      - spool:/var/spool/
+
+  mta:
+    image: mailad/mta
+    build: ./mta/
+    domainname: ${DOMAIN}
+    hostname: mta
+    restart: unless-stopped
+    environment:
+      # POSTFIX_MAX_MESSAGESIZE: 2264924 # bytes ~1024 * 1024 * MB * 1.08
+      # POSTFIX_REALY: 
+      # POSTFIX_ALWAYS_BCC: piler@${DOMAIN}
+      # POSTFIX_NATIONAL: cu
+      # POSTFIX_EVERYONE: todos@${DOMAIN} # if not explicit: disabled
+      # POSTFIX_SPF_ENABLE: True
+      # POSTFIX_DNSBL: True
+      POSTFIX_DOMAIN: ${DOMAIN}
+      POSTFIX_MAILADMIN: ${MAIL_ADMIN_USER}@${DOMAIN}
+      POSTFIX_LDAP_URI: "ldap://ldap:389"
+      POSTFIX_LDAP_SEARCH_BASE: ${LDAP_SEARCH_BASE}
+      POSTFIX_LDAP_BINDUSER: ${LDAP_LINK_USER_CN}
+      POSTFIX_LDAP_BINDUSER_PASSWD: ${LDAP_LINK_USER_PASSWD}
+      POSTFIX_AMAVIS: amavis
+    networks:
+     - services
+    ports:
+      - "25:25"
+      - "465:465"
+      - "587:587"
+      - "10025:10025"
+    volumes:
+      - vmail:/home/vmail
+      - certs:/certs
+
+  clamav:
+    image: mailad/clamav
+    build: ./clamav/
+    domainname: ${DOMAIN}
+    hostname: clamav
+    restart: unless-stopped
+    healthcheck:
+        test: ["CMD", "./check.sh"]
+        interval: 60s
+        retries: 3
+        start_period: 120s
+    environment:
+      # CLAMAV_PROXY_SERVER: 10.1.2.3
+      # CLAMAV_PROXY_PORT: 3128
+      CLAMAV_ALTERNATE_MIRROR: clamav.ddns.net
+    networks:
+     - services
+    ports:
+      - "3310"
+    volumes:
+      - clamav:/var/lib/clamav
+
+  amavis:
+    image: mailad/amavis
+    build: ./amavis/
+    domainname: ${DOMAIN}
+    hostname: amavis
+    restart: unless-stopped
+    healthcheck:
+        test: ["CMD", "/check.sh"]
+        interval: 60s
+        retries: 3
+        start_period: 120s
+    environment:
+      AMAVIS_MTA: mta
+      AMAVIS_SPAMASSASSIN_DISABLED: 1
+      AMAVIS_DKIM_SIGNING_DISABLED: 0 
+      AMAVIS_DKIM_DOMAIN: ${DOMAIN}
+      AMAVIS_AV_DISABLED: 1
+    networks:
+     - services
+    ports:
+      - "10024:10024"
+    volumes:
+      - amavis:/var/lib/amavis
+      - spamassassin:/var/lib/spamassassin
+
+networks:
+  services:
+    name: services
+    external: true
+
+volumes:
+  certs:
+  vmail:
+  spool:
+  clamav:
+  amavis:
+  spamassassin:

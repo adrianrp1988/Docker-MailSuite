@@ -1,0 +1,55 @@
+version: '3.5'
+services:
+  ldap:
+    image: osixia/openldap:latest
+    restart: unless-stopped
+    hostname: ldap
+    volumes:
+      - ldap_db:/var/lib/ldap
+      - ldap_config:/etc/ldap/slapd.d
+      - ./certificates:/container/service/slapd/assets/certs
+    environment:
+      - LDAP_ORGANISATION=${ORGANISATION}
+      - LDAP_DOMAIN=${DOMAIN}
+      - LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD}
+      - LDAP_CONFIG_PASSWORD=config
+      - LDAP_RFC2307BIS_SCHEMA=true
+      - LDAP_REMOVE_CONFIG_AFTER_SETUP=true
+      - LDAP_TLS_VERIFY_CLIENT=never
+      - LDAP_TLS_CRT_FILENAME=ldap.crt
+      - LDAP_TLS_KEY_FILENAME=ldap.key
+      - LDAP_TLS_CA_CRT_FILENAME=ca.crt
+    ports:
+      - 389:389/tcp
+    networks:
+      - services
+  openldap-ui:
+    image: wheelybird/ldap-user-manager:latest
+    container_name: openldap-ui
+    environment:
+      - LDAP_URI=ldap://ldap
+      - LDAP_BASE_DN=${LDAP_BASE_DN}
+      - EMAIL_DOMAIN=${DOMAIN}
+      - USERNAME_FORMAT=${USERNAME_FORMAT}
+      - LDAP_ADMINS_GROUP=admins
+      - LDAP_USER_OU=users
+      - LDAP_ADMIN_BIND_DN=${LDAP_ADMIN_DN}
+      - LDAP_ADMIN_BIND_PWD=${LDAP_ADMIN_PASSWORD}
+      - LDAP_IGNORE_CERT_ERRORS=true
+      - SERVER_HOSTNAME=localhost:8080
+    depends_on:
+      - ldap
+    ports:
+      - 8080:80
+      - 8443:443
+    networks:
+      - services
+volumes:
+  ldap_db:
+  ldap_config:
+  slapd:
+
+networks:
+  services:
+    name: services
+    external: true
