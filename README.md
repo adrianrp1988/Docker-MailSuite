@@ -12,8 +12,15 @@ La implementacion de la solución se realiza en 3 etapas y en el orden reflejado
 
 1. Definir los valores de variables de entorno e iniciar el servicio.
 2. Una vez iniciado el servicio, acceda a la URL https://hostname:8443/setup para realizar el provisionamiento.
-3. Durante el proceso de configuracion el asistente solicitara la creacion de una cuenta con permisos administrativos (en lo adelante "post.master"), que tendra como principal utilidad, la de permitir la administracion del servicio OpenLdap.
-4. Una vez terminado el aprovisionamiento, se podra acceder a la herramienta de administracion del servicio OpenLdap a través de la URL https://hostname:8443/ usando las credenciales de la cuenta post.master.
+   
+   ![Provisionamiento OpenLdap](https://github.com/adrianrp1988/wharehouse/blob/main/Docker-MailSuite/1-OpenLdap-Setup-Auth.png?raw=true "OpenLdap Setup")
+4. Durante el proceso de configuracion el asistente solicitara la creacion de una cuenta con permisos administrativos (en lo adelante "post.master"), que tendra como principal utilidad, la de permitir la administracion del servicio OpenLdap.
+
+   ![Provisionamiento OpenLdap](https://github.com/adrianrp1988/wharehouse/blob/main/Docker-MailSuite/2-OpenLdap-Setup-AdminAccount.png?raw=true "OpenLdap Setup")
+6. Una vez terminado el aprovisionamiento, se podra acceder a la herramienta de administracion del servicio OpenLdap a través de la URL https://hostname:8443/ usando las credenciales de la cuenta post.master.
+
+   ![Provisionamiento OpenLdap](https://github.com/adrianrp1988/wharehouse/blob/main/Docker-MailSuite/3-OpenLdap-Login.png?raw=true)
+   ![Provisionamiento OpenLdap](https://github.com/adrianrp1988/wharehouse/blob/main/Docker-MailSuite/4-OpenLdap-Account%20Management.png?raw=true)
 
 ### 2. MailAD
 
