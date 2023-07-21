@@ -56,7 +56,7 @@ if ((getenv('ROUNDCUBE_AUTOCOMPLETE_ADDRESS_BOOK_HOST')!== false) &&
         ),
         'sort'          => 'uid',
         'scope'         => 'sub',
-        'filter'        => '(&(|(objectclass=person))(!(mail=archive@'.getenv('DOMAIN').')))',
+        'filter'        => '(&(|(objectclass=person))(!(mail=piler@'.getenv('DOMAIN').')))',
         'fuzzy_search'  => true,
         'vlv'           => false,
         'sizelimit'     => '0',
