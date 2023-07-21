@@ -47,3 +47,9 @@ Para instalar Roundcube:
 1. Define las variables de entorno. Los valores serán similares a los reflejados en el servicio MailAD.
 
 ¡Listo! Ahora puedes utilizar tu solución de correo electrónico.
+
+ ![Provisionamiento OpenLdap](https://github.com/adrianrp1988/wharehouse/blob/main/Docker-MailSuite/5-OpenLdap-MailLogin.png)
+
+ 
+ ![Provisionamiento OpenLdap](https://github.com/adrianrp1988/wharehouse/blob/main/Docker-MailSuite/6-OpenLdap-MailBox.png)
+
