@@ -3,11 +3,12 @@ Docker MailSuite es una solución de correo electrónico implementada sobre dock
 
 [MailAD](https://github.com/stdevPavelmc/mailad-docker/), creado por [stdevPavelmc](https://github.com/stdevPavelmc) utiliza ActiveDirectory como base de datos de usuario, Docker MailSuite reemplaza Active Directory por OpenLdap, reduciendo los recursos necesarios y brindando una interfaz sencilla e intuitiva para la gestión de usuarios.
 
-Docker MailSuite esta compuesto por 3 servicios:
+
 
 ## Instalación de Docker MailSuite
 La implementacion de la solución se realiza en 3 etapas y en el orden reflejado a continuación:
 
+Docker MailSuite esta compuesto por 3 servicios:
 ### 1. OpenLDAP
 
 1. Definir los valores de variables de entorno e iniciar el servicio.
