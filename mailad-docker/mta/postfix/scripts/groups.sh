@@ -16,7 +16,7 @@ echo "Updating the groups and aliases info"
 source /etc/postfix/config.local
 
 # check if we need to get the everyone group
-if [ -z "$EVERYONE" ] ; then
+if [ -z "$POSTFIX_EVERYONE" ] ; then
     # empy result: Fail
     echo "EVERYONE group disabled, skiping..."
     echo "# Everyone list DISABLED in config" > /etc/postfix/aliases/auto_aliases
@@ -26,7 +26,7 @@ else
     echo "login into $HOSTAD as $LDAPBINDUSER"
 
     # LDAP query
-    RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectCategory=person)(objectClass=user)(sAMAccountName=*))" mail | grep "mail: " | grep "@$DOMAIN" | awk '{print $2}' | tr '\n' ','`
+    RESULT=`ldapsearch -o ldif-wrap=no -H "$LDAPURI" -D "$LDAPBINDUSER" -w "$LDAPBINDPASSWD" -b "$LDAPSEARCHBASE" "(&(objectClass=posixAccount)(objectClass=person)(cn=*))" mail | grep "mail: " | grep "@$DOMAIN" | awk '{print $2}' | tr '\n' ','`
 
     if [ "$RESULT" == "" ] ; then
         # empy result: Fail
@@ -34,9 +34,9 @@ else
         exit 1
     else
         # Success
-        echo "Success, $EVERYONE list created"
+        echo "Success, $POSTFIX_EVERYONE list created"
         echo "# Everyone list" > /etc/postfix/aliases/auto_aliases
-        echo "$EVERYONE     $RESULT" >> /etc/postfix/aliases/auto_aliases
+        echo "$POSTFIX_EVERYONE     $RESULT" >> /etc/postfix/aliases/auto_aliases
         echo " " >> /etc/postfix/aliases/auto_aliases
     fi
 fi
