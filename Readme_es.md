@@ -52,4 +52,3 @@ Para instalar Roundcube:
 
  
  ![Provisionamiento OpenLdap](https://github.com/adrianrp1988/wharehouse/blob/main/Docker-MailSuite/6-OpenLdap-MailBox.png)
-
